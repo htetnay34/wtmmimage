@@ -32,11 +32,16 @@ export default function Home() {
 
   
 
-  const handleSubmit = async (e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
 
-     // Translate the prompt from Myanmar to English using My Memory Translation
-    await translatePrompt(e.target.prompt.value);
+    // Ensure the translated prompt is available before making the API call
+    try {
+      await translatePrompt(e.target.prompt.value);
+    } catch (translationError) {
+      // Handle translation error if needed
+      return;
+    }
 
     
     const response = await fetch("/api/predictions", {
