@@ -30,18 +30,16 @@ export default function Home() {
     }
   };
 
-  
-
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Clear any previous translated prompt and error
-    setTranslatedPrompt("");
-    setError(null);
-
+    // Ensure the translated prompt is available before making the API call
     try {
-      // Ensure the translated prompt is available before making the API call
       await translatePrompt(e.target.prompt.value);
+    } catch (translationError) {
+      // Handle translation error if needed
+      return;
+    }
 
     
 // You can use `translatedPrompt` in the API call
