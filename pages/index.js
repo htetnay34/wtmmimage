@@ -54,23 +54,14 @@ export default function Home() {
       }),
     });
 
-    // Handle the response from the prediction API
-      if (response.status === 201) {
-        const predictionData = await response.json();
-        setPrediction(predictionData);
-      } else {
-        setError("Error submitting prediction request");
-      }
-    } catch (error) {
-      setError("An unexpected error occurred");
-    }
-  };
+
 
 
       
     let prediction = await response.json();
     if (response.status !== 201) {
-      setError(prediction.detail);
+     const predictionData = await response.json();
+        setPrediction(predictionData);
       return;
     }
     setPrediction(prediction);
