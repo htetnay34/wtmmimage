@@ -7,21 +7,45 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 export default function Home() {
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
+  const [translatedPrompt, setTranslatedPrompt] = useState("");
 
+  const translatePrompt = async (prompt) => {
+    const queryParams = new URLSearchParams({
+      q: prompt,
+      langpair: "my|en", // Translation from Myanmar to English
+    });
 
+    try {
+      const response = await fetch(`https://api.mymemory.translated.net/get?${queryParams}`);
+      const data = await response.json();
 
+      if (data.responseData && data.responseData.translatedText) {
+        setTranslatedPrompt(data.responseData.translatedText);
+      } else {
+        throw new Error("Translation failed");
+      }
+    } catch (translationError) {
+      console.error("Error translating prompt:", translationError);
+      setError("Error translating prompt");
+    }
+  };
 
   
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+     // Translate the prompt from Myanmar to English using My Memory Translation
+    await translatePrompt(e.target.prompt.value);
+
+    
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        prompt: e.target.prompt.value,
+        prompt: translatedPrompt,
       }),
     });
     let prediction = await response.json();
@@ -107,6 +131,12 @@ export default function Home() {
       </form>
 
       {error && <div>{error}</div>}
+       
+        {/* Display translated prompt */}
+      {translatedPrompt && (
+        <p className="py-3 text-sm opacity-50">Translated prompt: {translatedPrompt}</p>
+      )}
+       
 
       {prediction && (
         <>
