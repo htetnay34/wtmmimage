@@ -8,6 +8,11 @@ export default function Home() {
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
 
+
+
+
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await fetch("/api/predictions", {
@@ -41,6 +46,26 @@ export default function Home() {
       setPrediction(prediction);
     }
   };
+
+   const handleDownload = () => {
+    // Check if there is an image URL to download
+    if (prediction && prediction.output && prediction.output.length > 0) {
+      // Create a link element
+      const link = document.createElement("a");
+      // Set the href attribute to the image URL
+      link.href = prediction.output[prediction.output.length - 1];
+      // Set the download attribute to specify the file name
+      link.download = "generated_image.png";
+      // Append the link to the document body
+      document.body.appendChild(link);
+      // Trigger a click event on the link to start the download
+      link.click();
+      // Remove the link from the document body
+      document.body.removeChild(link);
+    }
+  };
+
+  
 
   return (
     <div className="container max-w-2xl mx-auto p-5">
@@ -82,6 +107,17 @@ export default function Home() {
             </div>
           )}
           <p className="py-3 text-sm opacity-50">status: {prediction.status}</p>
+
+
+          {/* Add the download button */}
+          <button
+            className="button mt-3"
+            onClick={handleDownload}
+            disabled={!prediction.output || prediction.output.length === 0}
+          >
+            Download Image
+          </button>
+            
         </>
       )}
     </div>
