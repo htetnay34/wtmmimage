@@ -58,7 +58,7 @@ export default function Home() {
 
 
       
-    let prediction = await response.json();
+
     // Handle the response from the prediction API
       if (response.status === 201) {
         const predictionData = await response.json();
