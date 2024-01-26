@@ -10,25 +10,20 @@ export default function Home() {
   const [translatedPrompt, setTranslatedPrompt] = useState("");
 
   const translatePrompt = async (prompt) => {
-    const queryParams = new URLSearchParams({
-      q: prompt,
-      langpair: "my|en", // Translation from Myanmar to English
-    });
+  try {
+    const response = await fetch(`https://api.mymemory.translated.net/get?q=${prompt}&langpair=my|en`);
+    const data = await response.json();
 
-    try {
-      const response = await fetch(`https://api.mymemory.translated.net/get?${queryParams}`);
-      const data = await response.json();
-
-      if (data.responseData && data.responseData.translatedText) {
-        setTranslatedPrompt(data.responseData.translatedText);
-      } else {
-        throw new Error("Translation failed");
-      }
-    } catch (translationError) {
-      console.error("Error translating prompt:", translationError);
-      setError("Error translating prompt");
+    if (data.responseData && data.responseData.translatedText) {
+      setTranslatedPrompt(data.responseData.translatedText);
+    } else {
+      throw new Error("Translation failed or empty response");
     }
-  };
+  } catch (translationError) {
+    console.error("Error translating prompt:", translationError);
+    setError("Error translating prompt");
+  }
+};
 
 const handleSubmit = async (e) => {
   e.preventDefault();
