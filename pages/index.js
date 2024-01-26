@@ -40,24 +40,6 @@ export default function Home() {
     try {
       // Ensure the translated prompt is available before making the API call
       await translatePrompt(e.target.prompt.value);
-
-
-
-    
-// You can use `translatedPrompt` in the API call
-      const response = await fetch("/api/predictions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: translatedPrompt, // Use the translated prompt
-        }),
-      });
-
-
-
-
       
 
     const response = await fetch("/api/predictions", {
