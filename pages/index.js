@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export default function Home() {
+const Home = () => {
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
   const [translatedPrompt, setTranslatedPrompt] = useState("");
@@ -88,16 +88,27 @@ export default function Home() {
     }
   };
 
+  const handleDownload = () => {
+    // Check if there is a generated image URL
+    if (prediction && prediction.output && prediction.output.length > 0) {
+      const imageUrl = prediction.output[prediction.output.length - 1];
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = 'generated_image.jpg';
+      link.click();
+    }
+  };
+
   return (
     <div className="container max-w-2xl mx-auto p-5">
       <Head>
-        <title>Infinity AI - Image Generator Pro</title>
+        <title>Replicate + Next.js</title>
       </Head>
 
       <h1 className="py-6 text-center font-bold text-2xl">
         Dream something with{" "}
         <a href="https://replicate.com/stability-ai/sdxl?utm_source=project&utm_project=getting-started">
-          Infinity AI
+          SDXL
         </a>
       </h1>
 
@@ -134,8 +145,15 @@ export default function Home() {
             </div>
           )}
           <p className="py-3 text-sm opacity-50">status: {prediction.status}</p>
+
+          {/* Download button */}
+          <button className="button mt-3" onClick={handleDownload}>
+            Download Image
+          </button>
         </>
       )}
     </div>
   );
-}
+};
+
+export default Home;
