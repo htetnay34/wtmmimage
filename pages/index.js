@@ -58,28 +58,35 @@ const handleSubmit = async (e) => {
       }),
     });
 
-     let prediction = await response.json();
-    if (response.status !== 201) {
-      setError(prediction.detail);
-      return;
-    }
-    setPrediction(prediction);
-
-    while (
-      prediction.status !== "succeeded" &&
-      prediction.status !== "failed"
-    ) {
-      await sleep(1000);
-      const response = await fetch("/api/predictions/" + prediction.id);
-      prediction = await response.json();
-      if (response.status !== 200) {
-        setError(prediction.detail);
-        return;
-      }
-      console.log({ prediction });
+    // Handle the response from the prediction API
+    if (response.status === 201) {
+      let prediction = await response.json();
       setPrediction(prediction);
+
+      // Poll for prediction status
+      while (
+        prediction.status !== "succeeded" &&
+        prediction.status !== "failed"
+      ) {
+        await sleep(1000);
+        const statusResponse = await fetch("/api/predictions/" + prediction.id);
+        const updatedPrediction = await statusResponse.json();
+        if (statusResponse.status !== 200) {
+          setError(updatedPrediction.detail);
+          return;
+        }
+
+        console.log({ updatedPrediction });
+        setPrediction(updatedPrediction);
+      }
+    } else {
+      setError("Error submitting prediction request");
     }
-  };
+  } catch (error) {
+    setError("An unexpected error occurred");
+  }
+};
+
 
 
  const handleDownload = async () => {
