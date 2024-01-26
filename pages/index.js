@@ -15,15 +15,32 @@ export default function Home() {
       const data = await response.json();
 
       if (data.responseData && data.responseData.translatedText) {
-        setTranslatedPrompt(data.responseData.translatedText);
-        setError(null); // Reset translation error on success
+        return data.responseData.translatedText;
       } else {
         throw new Error("Translation failed or empty response");
       }
     } catch (translationError) {
       console.error("Error translating prompt:", translationError);
-      setTranslatedPrompt(""); // Clear translated prompt on error
       setError("Error translating prompt");
+      return "";
+    }
+  };
+
+  const pollPredictionStatus = async (predictionId) => {
+    let prediction = null;
+
+    while (!prediction || (prediction.status !== "succeeded" && prediction.status !== "failed")) {
+      await sleep(1000);
+      const response = await fetch("/api/predictions/" + predictionId);
+      prediction = await response.json();
+
+      if (response.status !== 200) {
+        setError(prediction.detail);
+        return;
+      }
+
+      console.log({ prediction });
+      setPrediction(prediction);
     }
   };
 
@@ -37,13 +54,15 @@ export default function Home() {
 
     try {
       // Translate the prompt from Myanmar to English using My Memory Translation
-      await translatePrompt(e.target.prompt.value);
+      const translated = await translatePrompt(e.target.prompt.value);
 
       // Ensure the translated prompt is available before making the API call
-      if (!translatedPrompt) {
+      if (!translated) {
         setError("Error translating prompt");
         return;
       }
+
+      setTranslatedPrompt(translated);
 
       // Submit only the translated prompt to the prediction API...
       const response = await fetch("/api/predictions", {
@@ -52,31 +71,15 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          prompt: translatedPrompt, // Use the translated prompt
+          prompt: translated, // Use the translated prompt
         }),
       });
 
       // Handle the response from the prediction API
       if (response.status === 201) {
-        let prediction = await response.json();
-        setPrediction(prediction);
-
-        // Poll for prediction status
-        while (
-          prediction.status !== "succeeded" &&
-          prediction.status !== "failed"
-        ) {
-          await sleep(1000);
-          const statusResponse = await fetch("/api/predictions/" + prediction.id);
-          const updatedPrediction = await statusResponse.json();
-          if (statusResponse.status !== 200) {
-            setError(updatedPrediction.detail);
-            return;
-          }
-
-          console.log({ updatedPrediction });
-          setPrediction(updatedPrediction);
-        }
+        const predictionData = await response.json();
+        setPrediction(predictionData);
+        await pollPredictionStatus(predictionData.id);
       } else {
         setError("Error submitting prediction request");
       }
