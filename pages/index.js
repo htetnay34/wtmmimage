@@ -96,28 +96,30 @@ const Home = () => {
       const response = await fetch(prediction.output[prediction.output.length - 1]);
       const blob = await response.blob();
 
-      // Create an image element
-      const img = new Image();
-      img.src = URL.createObjectURL(blob);
+      // Create a temporary link
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "generated_image.png";
 
-      // Wait for the image to load
+      // Create an image element to draw on a canvas
+      const img = new Image();
+      img.src = link.href;
+
       img.onload = () => {
-        // Create a canvas element
+        // Create a canvas
         const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
 
         // Set canvas dimensions to match the image
         canvas.width = img.width;
         canvas.height = img.height;
 
-        // Obtain the rendering context
-        const ctx = canvas.getContext("2d");
-
         // Draw the image on the canvas
-        ctx.drawImage(img, 0, 0, img.width, img.height);
+        ctx.drawImage(img, 0, 0);
 
         // Add the watermark
-        ctx.font = "20px Arial"; // Set the font size and style
-        ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; // Set the color and transparency
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
         ctx.fillText("Your Watermark", canvas.width / 2, canvas.height - 10);
@@ -125,14 +127,8 @@ const Home = () => {
         // Convert the canvas content to a data URL
         const dataURL = canvas.toDataURL("image/png");
 
-        // Create a link element
-        const link = document.createElement("a");
-
         // Set the href attribute to the data URL
         link.href = dataURL;
-
-        // Set the download attribute to specify the file name
-        link.download = "generated_image_with_watermark.png";
 
         // Append the link to the document body
         document.body.appendChild(link);
