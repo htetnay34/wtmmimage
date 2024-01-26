@@ -41,6 +41,12 @@ const handleSubmit = async (e) => {
     // Translate the prompt from Myanmar to English using My Memory Translation
     await translatePrompt(e.target.prompt.value);
 
+    // Ensure the translated prompt is available before making the API call
+    if (!translatedPrompt) {
+      setError("Error translating prompt");
+      return;
+    }
+
     // Submit only the translated prompt to the prediction API...
     const response = await fetch("/api/predictions", {
       method: "POST",
