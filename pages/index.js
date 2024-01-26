@@ -59,11 +59,17 @@ export default function Home() {
 
       
     let prediction = await response.json();
-     if (response.status !== 201) {
-      setError(prediction.detail);
-      return;
+    // Handle the response from the prediction API
+      if (response.status === 201) {
+        const predictionData = await response.json();
+        setPrediction(predictionData);
+      } else {
+        setError("Error submitting prediction request");
+      }
+    } catch (error) {
+      setError("An unexpected error occurred");
     }
-    setPrediction(prediction);
+  };
 
     while (
       prediction.status !== "succeeded" &&
