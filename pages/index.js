@@ -10,113 +10,80 @@ export default function Home() {
   const [translatedPrompt, setTranslatedPrompt] = useState("");
 
   const translatePrompt = async (prompt) => {
-  try {
-    const response = await fetch(`https://api.mymemory.translated.net/get?q=${prompt}&langpair=my|en`);
-    const data = await response.json();
+    try {
+      const response = await fetch(`https://api.mymemory.translated.net/get?q=${prompt}&langpair=my|en`);
+      const data = await response.json();
 
-    if (data.responseData && data.responseData.translatedText) {
-      setTranslatedPrompt(data.responseData.translatedText);
-    } else {
-      throw new Error("Translation failed or empty response");
-    }
-  } catch (translationError) {
-    console.error("Error translating prompt:", translationError);
-    setError("Error translating prompt");
-  }
-};
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  // Clear any previous translated prompt and error
-  setTranslatedPrompt("");
-  setError(null);
-
-  try {
-    // Translate the prompt from Myanmar to English using My Memory Translation
-    await translatePrompt(e.target.prompt.value);
-
-    // Ensure the translated prompt is available before making the API call
-    if (!translatedPrompt) {
+      if (data.responseData && data.responseData.translatedText) {
+        setTranslatedPrompt(data.responseData.translatedText);
+        setError(null); // Reset translation error on success
+      } else {
+        throw new Error("Translation failed or empty response");
+      }
+    } catch (translationError) {
+      console.error("Error translating prompt:", translationError);
+      setTranslatedPrompt(""); // Clear translated prompt on error
       setError("Error translating prompt");
-      return;
-    }
-
-    // Submit only the translated prompt to the prediction API...
-    const response = await fetch("/api/predictions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: translatedPrompt, // Use the translated prompt
-      }),
-    });
-
-    // Handle the response from the prediction API
-    if (response.status === 201) {
-      let prediction = await response.json();
-      setPrediction(prediction);
-
-      // Poll for prediction status
-      while (
-        prediction.status !== "succeeded" &&
-        prediction.status !== "failed"
-      ) {
-        await sleep(1000);
-        const statusResponse = await fetch("/api/predictions/" + prediction.id);
-        const updatedPrediction = await statusResponse.json();
-        if (statusResponse.status !== 200) {
-          setError(updatedPrediction.detail);
-          return;
-        }
-
-        console.log({ updatedPrediction });
-        setPrediction(updatedPrediction);
-      }
-    } else {
-      setError("Error submitting prediction request");
-    }
-  } catch (error) {
-    setError("An unexpected error occurred");
-  }
-};
-
-
-
- const handleDownload = async () => {
-    // Check if there is an image URL to download
-    if (prediction && prediction.output && prediction.output.length > 0) {
-      try {
-        // Fetch the image data
-        const response = await fetch(prediction.output[prediction.output.length - 1]);
-        const blob = await response.blob();
-
-        // Create a link element
-        const link = document.createElement("a");
-        // Create a Blob URL for the image data
-        const url = window.URL.createObjectURL(blob);
-        
-        // Set the href attribute to the Blob URL
-        link.href = url;
-        // Set the download attribute to specify the file name
-        link.download = "generated_image.png";
-        // Append the link to the document body
-        document.body.appendChild(link);
-        // Trigger a click event on the link to start the download
-        link.click();
-        // Remove the link from the document body
-        document.body.removeChild(link);
-
-        // Revoke the Blob URL to free up resources
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Error downloading image:", error);
-      }
     }
   };
 
-  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Clear any previous translated prompt, error, and prediction
+    setTranslatedPrompt("");
+    setError(null);
+    setPrediction(null);
+
+    try {
+      // Translate the prompt from Myanmar to English using My Memory Translation
+      await translatePrompt(e.target.prompt.value);
+
+      // Ensure the translated prompt is available before making the API call
+      if (!translatedPrompt) {
+        setError("Error translating prompt");
+        return;
+      }
+
+      // Submit only the translated prompt to the prediction API...
+      const response = await fetch("/api/predictions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: translatedPrompt, // Use the translated prompt
+        }),
+      });
+
+      // Handle the response from the prediction API
+      if (response.status === 201) {
+        let prediction = await response.json();
+        setPrediction(prediction);
+
+        // Poll for prediction status
+        while (
+          prediction.status !== "succeeded" &&
+          prediction.status !== "failed"
+        ) {
+          await sleep(1000);
+          const statusResponse = await fetch("/api/predictions/" + prediction.id);
+          const updatedPrediction = await statusResponse.json();
+          if (statusResponse.status !== 200) {
+            setError(updatedPrediction.detail);
+            return;
+          }
+
+          console.log({ updatedPrediction });
+          setPrediction(updatedPrediction);
+        }
+      } else {
+        setError("Error submitting prediction request");
+      }
+    } catch (error) {
+      setError("An unexpected error occurred");
+    }
+  };
 
   return (
     <div className="container max-w-2xl mx-auto p-5">
@@ -136,7 +103,7 @@ const handleSubmit = async (e) => {
           type="text"
           className="flex-grow"
           name="prompt"
-          placeholder="Enter a prompt to display an image"
+          placeholder="Enter a prompt in Myanmar"
         />
         <button className="button" type="submit">
           Go!
@@ -144,13 +111,13 @@ const handleSubmit = async (e) => {
       </form>
 
       {error && <div>{error}</div>}
-       
-        {/* Display translated prompt */}
+
+      {/* Display translated prompt */}
       {translatedPrompt && (
         <p className="py-3 text-sm opacity-50">Translated prompt: {translatedPrompt}</p>
       )}
-       
 
+      {/* The rest of your code for displaying predictions and images... */}
       {prediction && (
         <>
           {prediction.output && (
@@ -164,17 +131,6 @@ const handleSubmit = async (e) => {
             </div>
           )}
           <p className="py-3 text-sm opacity-50">status: {prediction.status}</p>
-
-
-          {/* Add the download button */}
-          <button
-            className="button mt-3"
-            onClick={handleDownload}
-            disabled={!prediction.output || prediction.output.length === 0}
-          >
-            Download Image
-          </button>
-            
         </>
       )}
     </div>
