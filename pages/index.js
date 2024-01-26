@@ -108,7 +108,12 @@ const Home = () => {
 <script async="async" data-cfasync="false" src="//thubanoa.com/1?z=6978755"></script>
   
       </Head>
-
+  <h1 className="py-6 text-center font-bold text-2xl">
+        Dream something with{" "}
+        <a href="https://infinityai.online">
+          Infinity AI
+        </a>
+      </h1>
 
       <form className="w-full flex" onSubmit={handleSubmit}>
         <input
