@@ -30,39 +30,56 @@ export default function Home() {
     }
   };
 
- const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // Clear any previous translated prompt and error
-    setTranslatedPrompt("");
-    setError(null);
+  // Clear any previous translated prompt and error
+  setTranslatedPrompt("");
+  setError(null);
 
-    try {
-      // Ensure the translated prompt is available before making the API call
-      await translatePrompt(e.target.prompt.value);
-      
+  try {
+    // Translate the prompt from Myanmar to English using My Memory Translation
+    await translatePrompt(e.target.prompt.value);
 
+    // Submit only the translated prompt to the prediction API...
     const response = await fetch("/api/predictions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: translatedPrompt, // Use the translated prompt
-        }),
-      });
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: translatedPrompt, // Use the translated prompt
+      }),
+    });
 
-      // Handle the response from the prediction API
-      if (response.status === 201) {
-        const predictionData = await response.json();
-        setPrediction(predictionData);
-      } else {
-        setError("Error submitting prediction request");
+    // Handle the response from the prediction API
+    if (response.status === 201) {
+      const predictionData = await response.json();
+      setPrediction(predictionData);
+
+      // Poll for prediction status
+      while (
+        predictionData.status !== "succeeded" &&
+        predictionData.status !== "failed"
+      ) {
+        await sleep(1000);
+        const statusResponse = await fetch("/api/predictions/" + predictionData.id);
+        const updatedPrediction = await statusResponse.json();
+        if (statusResponse.status !== 200) {
+          setError(updatedPrediction.detail);
+          return;
+        }
+
+        console.log({ updatedPrediction });
+        setPrediction(updatedPrediction);
       }
-    } catch (error) {
-      setError("An unexpected error occurred");
+    } else {
+      setError("Error submitting prediction request");
     }
-  };
+  } catch (error) {
+    setError("An unexpected error occurred");
+  }
+};
 
  const handleDownload = async () => {
     // Check if there is an image URL to download
