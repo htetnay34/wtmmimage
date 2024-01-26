@@ -58,34 +58,29 @@ const handleSubmit = async (e) => {
       }),
     });
 
-    // Handle the response from the prediction API
-    if (response.status === 201) {
-      const predictionData = await response.json();
-      setPrediction(predictionData);
-
-      // Poll for prediction status
-      while (
-        predictionData.status !== "succeeded" &&
-        predictionData.status !== "failed"
-      ) {
-        await sleep(1000);
-        const statusResponse = await fetch("/api/predictions/" + predictionData.id);
-        const updatedPrediction = await statusResponse.json();
-        if (statusResponse.status !== 200) {
-          setError(updatedPrediction.detail);
-          return;
-        }
-
-        console.log({ updatedPrediction });
-        setPrediction(updatedPrediction);
-      }
-    } else {
-      setError("Error submitting prediction request");
+     let prediction = await response.json();
+    if (response.status !== 201) {
+      setError(prediction.detail);
+      return;
     }
-  } catch (error) {
-    setError("An unexpected error occurred");
-  }
-};
+    setPrediction(prediction);
+
+    while (
+      prediction.status !== "succeeded" &&
+      prediction.status !== "failed"
+    ) {
+      await sleep(1000);
+      const response = await fetch("/api/predictions/" + prediction.id);
+      prediction = await response.json();
+      if (response.status !== 200) {
+        setError(prediction.detail);
+        return;
+      }
+      console.log({ prediction });
+      setPrediction(prediction);
+    }
+  };
+
 
  const handleDownload = async () => {
     // Check if there is an image URL to download
