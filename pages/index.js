@@ -88,14 +88,35 @@ const Home = () => {
     }
   };
 
-  const handleDownload = () => {
-    // Check if there is a generated image URL
+  const handleDownload = async () => {
+    // Check if there is an image URL to download
     if (prediction && prediction.output && prediction.output.length > 0) {
-      const imageUrl = prediction.output[prediction.output.length - 1];
-      const link = document.createElement('a');
-      link.href = imageUrl;
-      link.download = 'generated_image.jpg';
-      link.click();
+      try {
+        // Fetch the image data
+        const response = await fetch(prediction.output[prediction.output.length - 1]);
+        const blob = await response.blob();
+
+        // Create a link element
+        const link = document.createElement("a");
+        // Create a Blob URL for the image data
+        const url = window.URL.createObjectURL(blob);
+        
+        // Set the href attribute to the Blob URL
+        link.href = url;
+        // Set the download attribute to specify the file name
+        link.download = "generated_image.png";
+        // Append the link to the document body
+        document.body.appendChild(link);
+        // Trigger a click event on the link to start the download
+        link.click();
+        // Remove the link from the document body
+        document.body.removeChild(link);
+
+        // Revoke the Blob URL to free up resources
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error downloading image:", error);
+      }
     }
   };
 
