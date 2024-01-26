@@ -102,13 +102,15 @@ const Home = () => {
   return (
     <div className="container max-w-2xl mx-auto p-5">
       <Head>
-        <title>Replicate + Next.js</title>
+        <title>Infinty AI - AI Image Generator Pro</title>
+    {/* Add the meta tag for Monetag */}
+        <meta name="monetag" content="2d00d13657a9551eb78c7c941596d1de" />
       </Head>
 
       <h1 className="py-6 text-center font-bold text-2xl">
         Dream something with{" "}
         <a href="https://replicate.com/stability-ai/sdxl?utm_source=project&utm_project=getting-started">
-          SDXL
+          Infinity AI
         </a>
       </h1>
 
@@ -117,7 +119,7 @@ const Home = () => {
           type="text"
           className="flex-grow"
           name="prompt"
-          placeholder="Enter a prompt in Myanmar"
+          placeholder="Enter a prompt in Myanmar or English"
         />
         <button className="button" type="submit">
           Go!
