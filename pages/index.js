@@ -89,36 +89,63 @@ const Home = () => {
   };
 
   const handleDownload = async () => {
-    // Check if there is an image URL to download
-    if (prediction && prediction.output && prediction.output.length > 0) {
-      try {
-        // Fetch the image data
-        const response = await fetch(prediction.output[prediction.output.length - 1]);
-        const blob = await response.blob();
+  // Check if there is an image URL to download
+  if (prediction && prediction.output && prediction.output.length > 0) {
+    try {
+      // Fetch the image data
+      const response = await fetch(prediction.output[prediction.output.length - 1]);
+      const blob = await response.blob();
+
+      // Create an image element
+      const img = new Image();
+      img.src = URL.createObjectURL(blob);
+
+      // Wait for the image to load
+      img.onload = () => {
+        // Create a canvas element
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions to match the image
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        // Draw the image on the canvas
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+
+        // Add the watermark
+        ctx.font = "20px Arial"; // Set the font size and style
+        ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; // Set the color and transparency
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText("Infinity AI", canvas.width / 2, canvas.height - 10);
+
+        // Convert the canvas content to a data URL
+        const dataURL = canvas.toDataURL("image/png");
 
         // Create a link element
         const link = document.createElement("a");
-        // Create a Blob URL for the image data
-        const url = window.URL.createObjectURL(blob);
-        
-        // Set the href attribute to the Blob URL
-        link.href = url;
+
+        // Set the href attribute to the data URL
+        link.href = dataURL;
+
         // Set the download attribute to specify the file name
-        link.download = "generated_image.png";
+        link.download = "generated_image_with_watermark.png";
+
         // Append the link to the document body
         document.body.appendChild(link);
+
         // Trigger a click event on the link to start the download
         link.click();
+
         // Remove the link from the document body
         document.body.removeChild(link);
-
-        // Revoke the Blob URL to free up resources
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Error downloading image:", error);
-      }
+      };
+    } catch (error) {
+      console.error("Error downloading image:", error);
     }
-  };
+  }
+};
 
   return (
     <div className="container max-w-2xl mx-auto p-5">
