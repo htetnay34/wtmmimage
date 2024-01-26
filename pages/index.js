@@ -69,7 +69,7 @@ export default function Home() {
     } catch (error) {
       setError("An unexpected error occurred");
     }
-  };
+
 
     while (
       prediction.status !== "succeeded" &&
