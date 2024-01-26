@@ -33,13 +33,14 @@ export default function Home() {
  const handleSubmit = async (e) => {
     e.preventDefault();
 
-     // Clear any previous translated prompt and error
+    // Clear any previous translated prompt and error
     setTranslatedPrompt("");
     setError(null);
 
-  try {
+    try {
       // Ensure the translated prompt is available before making the API call
       await translatePrompt(e.target.prompt.value);
+
 
 
     
@@ -59,7 +60,17 @@ export default function Home() {
 
       
 
-    // Handle the response from the prediction API
+    const response = await fetch("/api/predictions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: translatedPrompt, // Use the translated prompt
+        }),
+      });
+
+      // Handle the response from the prediction API
       if (response.status === 201) {
         const predictionData = await response.json();
         setPrediction(predictionData);
@@ -68,22 +79,6 @@ export default function Home() {
       }
     } catch (error) {
       setError("An unexpected error occurred");
-    }
-
-
-    while (
-      prediction.status !== "succeeded" &&
-      prediction.status !== "failed"
-    ) {
-      await sleep(1000);
-      const response = await fetch("/api/predictions/" + prediction.id);
-      prediction = await response.json();
-      if (response.status !== 200) {
-        setError(prediction.detail);
-        return;
-      }
-      console.log({ prediction });
-      setPrediction(prediction);
     }
   };
 
