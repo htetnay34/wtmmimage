@@ -88,7 +88,7 @@ const Home = () => {
     }
   };
 
-  const handleDownload = async () => {
+ const handleDownload = async () => {
   // Check if there is an image URL to download
   if (prediction && prediction.output && prediction.output.length > 0) {
     try {
@@ -104,11 +104,13 @@ const Home = () => {
       img.onload = () => {
         // Create a canvas element
         const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
 
         // Set canvas dimensions to match the image
         canvas.width = img.width;
         canvas.height = img.height;
+
+        // Obtain the rendering context
+        const ctx = canvas.getContext("2d");
 
         // Draw the image on the canvas
         ctx.drawImage(img, 0, 0, img.width, img.height);
@@ -118,7 +120,7 @@ const Home = () => {
         ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; // Set the color and transparency
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
-        ctx.fillText("Infinity AI", canvas.width / 2, canvas.height - 10);
+        ctx.fillText("Your Watermark", canvas.width / 2, canvas.height - 10);
 
         // Convert the canvas content to a data URL
         const dataURL = canvas.toDataURL("image/png");
@@ -146,6 +148,7 @@ const Home = () => {
     }
   }
 };
+
 
   return (
     <div className="container max-w-2xl mx-auto p-5">
