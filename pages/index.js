@@ -95,8 +95,8 @@ const handleDownload = async () => {
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
 
-      // Provide a link to open the image in a new tab
-      window.alert("To download the image, right-click on the image and choose 'Save Image As...'.");
+      // Provide a message to guide users on manual download
+      window.alert("ပုံကို download လုပ်ရန် ပုံပေါ်ကို ဖိထားပြီး  'Save ဖြစ်ဖြစ် Save Image As နဲ့ဖြစ်ဖြစ် သိမ်းပါ...'.");
 
       // Open the image in a new tab
       window.open(url, '_blank');
@@ -105,6 +105,7 @@ const handleDownload = async () => {
     }
   }
 };
+
 
   return (
     <div className="container max-w-2xl mx-auto p-5">
