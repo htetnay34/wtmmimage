@@ -133,7 +133,7 @@ const handleDownload = async () => {
           type="text"
           className="flex-grow"
           name="prompt"
-          placeholder="Enter a prompt in Myanmar or English"
+          placeholder="ထုတ်ခိုင်းချင်သည့် ပုံကိုရေးပါ"
         />
         <button className="button" type="submit">
           Go!
