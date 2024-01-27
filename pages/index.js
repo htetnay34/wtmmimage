@@ -98,7 +98,7 @@ const handleDownload = async () => {
       // Display instructions on the page
       const instructionsDiv = document.createElement('div');
       instructionsDiv.innerHTML = `
-        <p>ပုံကို download လုပ်ရန် ပုံပေါ်ကို ဖိထားပြီး  'Save ဖြစ်ဖြစ် Save Image As နဲ့ဖြစ်ဖြစ် သိမ်းပါ..Facebook ကနေဆိုရင် သိမ်းမရပါ။ Browser ကနေသုံးပါ။'.</p>
+        <p>To download the image, right-click on the image and choose 'Save Image As...'.</p>
       `;
 
       // Append instructions to the body or a specific element
@@ -110,6 +110,7 @@ const handleDownload = async () => {
       console.error("Error downloading image:", error);
     }
 };
+
 
 
   return (
