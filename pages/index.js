@@ -88,7 +88,7 @@ const Home = () => {
     }
   };
 
-const handleDownload = async () => {
+  const handleDownload = async () => {
   if (prediction && prediction.output && prediction.output.length > 0) {
     try {
       const response = await fetch(prediction.output[prediction.output.length - 1]);
@@ -112,17 +112,15 @@ const handleDownload = async () => {
   }
 };
 
-
   return (
     <div className="container max-w-2xl mx-auto p-5">
       <Head>
         <title>Infinty AI - AI Image Generator Pro</title>
-    {/* Add the meta tag for Monetag */}
+        {/* Add the meta tag for Monetag */}
         <meta name="monetag" content="2d00d13657a9551eb78c7c941596d1de" />
-<script async="async" data-cfasync="false" src="//thubanoa.com/1?z=6978755"></script>
-  
+        <script async="async" data-cfasync="false" src="//thubanoa.com/1?z=6978755"></script>
       </Head>
-  <h1 className="py-6 text-center font-bold text-2xl">
+      <h1 className="py-6 text-center font-bold text-2xl">
         Dream something with{" "}
         <a href="https://infinityai.online">
           Infinity AI
@@ -148,25 +146,25 @@ const handleDownload = async () => {
         <p className="py-3 text-sm opacity-50">Translated prompt: {translatedPrompt}</p>
       )}
 
-      {/* The rest of your code for displaying predictions and images... */}
-      {prediction && (
+      {/* Render image and download button conditionally */}
+      {prediction && prediction.output && (
         <>
-          {prediction.output && (
-            <div className="image-wrapper mt-5">
-              <Image
-                fill
-                src={prediction.output[prediction.output.length - 1]}
-                alt="output"
-                sizes="100vw"
-              />
-            </div>
-          )}
+          <div className="image-wrapper mt-5">
+            <Image
+              fill
+              src={prediction.output[prediction.output.length - 1]}
+              alt="output"
+              sizes="100vw"
+            />
+          </div>
           <p className="py-3 text-sm opacity-50">status: {prediction.status}</p>
 
-          {/* Download button */}
-          <button className="button mt-3" onClick={handleDownload}>
-            Download Image
-          </button>
+          {/* Conditionally render the download button */}
+          {prediction.output.length > 0 && (
+            <button className="button mt-3" onClick={handleDownload}>
+              Download Image
+            </button>
+          )}
         </>
       )}
     </div>
@@ -174,4 +172,3 @@ const handleDownload = async () => {
 };
 
 export default Home;
-
