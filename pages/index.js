@@ -95,7 +95,10 @@ const handleDownload = async () => {
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
 
-      // Open the image in a new tab or window
+      // Provide a link to open the image in a new tab
+      window.alert("To download the image, right-click on the image and choose 'Save Image As...'.");
+
+      // Open the image in a new tab
       window.open(url, '_blank');
     } catch (error) {
       console.error("Error downloading image:", error);
