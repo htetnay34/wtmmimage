@@ -95,8 +95,12 @@ const handleDownload = async () => {
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
 
-      // Provide a message to guide users on manual download
-      window.alert("To download the image, right-click on the image and choose 'Save Image As...'.");
+      // Display instructions on the page
+      const instructionsDiv = document.createElement('div');
+      instructionsDiv.innerHTML = '<p>To download the image, right-click on the image and choose \'Save Image As...\'.</p>';
+
+      // Append instructions to the body or a specific element
+      document.body.appendChild(instructionsDiv);
 
       // Open the image in a new tab
       window.open(url, '_blank');
