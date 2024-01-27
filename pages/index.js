@@ -95,15 +95,20 @@ const handleDownload = async () => {
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
 
-      // Provide a message to guide users on manual download
-      window.alert("ပုံကို download လုပ်ရန် ပုံပေါ်ကို ဖိထားပြီး  'Save ဖြစ်ဖြစ် Save Image As နဲ့ဖြစ်ဖြစ် သိမ်းပါ...'.");
+      // Display instructions on the page
+      const instructionsDiv = document.createElement('div');
+      instructionsDiv.innerHTML = `
+        <p>ပုံကို download လုပ်ရန် ပုံပေါ်ကို ဖိထားပြီး  'Save ဖြစ်ဖြစ် Save Image As နဲ့ဖြစ်ဖြစ် သိမ်းပါ..Facebook ကနေဆိုရင် သိမ်းမရပါ။ Browser ကနေသုံးပါ။'.</p>
+      `;
+
+      // Append instructions to the body or a specific element
+      document.body.appendChild(instructionsDiv);
 
       // Open the image in a new tab
       window.open(url, '_blank');
     } catch (error) {
       console.error("Error downloading image:", error);
     }
-  }
 };
 
 
