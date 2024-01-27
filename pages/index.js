@@ -88,24 +88,15 @@ const Home = () => {
     }
   };
 
-  const handleDownload = async () => {
+const handleDownload = async () => {
   if (prediction && prediction.output && prediction.output.length > 0) {
     try {
       const response = await fetch(prediction.output[prediction.output.length - 1]);
       const blob = await response.blob();
-      
       const url = window.URL.createObjectURL(blob);
 
-      // Create an anchor element
-      const link = document.createElement("a");
-      link.href = url;
-      link.target = "_blank";  // Open in a new tab/window
-
-      // Trigger a click event on the link
-      link.click();
-      
-      // Clean up
-      window.URL.revokeObjectURL(url);
+      // Open the image in a new tab or window
+      window.open(url, '_blank');
     } catch (error) {
       console.error("Error downloading image:", error);
     }
