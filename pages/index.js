@@ -143,7 +143,7 @@ const Home = () => {
 
       {/* Display translated prompt */}
       {translatedPrompt && (
-        <p className="py-3 text-sm opacity-50">Translated prompt: {translatedPrompt}</p>
+        <p className="py-3 text-sm opacity-50">Translated prompt - ခဏစောင့်ပါ: {translatedPrompt}</p>
       )}
 
       {/* Render image and download button conditionally */}
