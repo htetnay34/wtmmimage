@@ -150,24 +150,23 @@ const Home = () => {
       )}
 
       {/* The rest of your code for displaying predictions and images... */}
-      {prediction && (
-        <>
-          {prediction.output && (
-            <div className="image-wrapper mt-5">
-              <Image
-                fill
-                src={prediction.output[prediction.output.length - 1]}
-                alt="output"
-                sizes="100vw"
-              />
-            </div>
-          )}
-          <p className="py-3 text-sm opacity-50">status: {prediction.status}</p>
+      {prediction && prediction.output && (
+  <>
+    <div className="image-wrapper mt-5">
+      <Image
+        fill
+        src={prediction.output[prediction.output.length - 1]}
+        alt="output"
+        sizes="100vw"
+      />
+    </div>
+    <p className="py-3 text-sm opacity-50">status: {prediction.status}</p>
 
-          {/* Download button */}
-          <button className="button mt-3" onClick={handleDownload}>
-            Download Image
-          </button>
+    {/* Conditionally render the download button */}
+    {prediction.output.length > 0 && (
+      <button className="button mt-3" onClick={handleDownload}>
+        Download Image
+      </button>
         </>
       )}
     </div>
