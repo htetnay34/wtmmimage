@@ -89,36 +89,29 @@ const Home = () => {
   };
 
  const handleDownload = async () => {
-    // Check if there is an image URL to download
-    if (prediction && prediction.output && prediction.output.length > 0) {
-      try {
-        // Fetch the image data
-        const response = await fetch(prediction.output[prediction.output.length - 1]);
-        const blob = await response.blob();
+  if (prediction && prediction.output && prediction.output.length > 0) {
+    try {
+      const response = await fetch(prediction.output[prediction.output.length - 1]);
+      const blob = await response.blob();
+      
+      const url = window.URL.createObjectURL(blob);
 
-        // Create a link element
-        const link = document.createElement("a");
-        // Create a Blob URL for the image data
-        const url = window.URL.createObjectURL(blob);
-        
-        // Set the href attribute to the Blob URL
-        link.href = url;
-        // Set the download attribute to specify the file name
-        link.download = "generated_image.png";
-        // Append the link to the document body
-        document.body.appendChild(link);
-        // Trigger a click event on the link to start the download
-        link.click();
-        // Remove the link from the document body
-        document.body.removeChild(link);
+      // Create an anchor element
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";  // Open in a new tab/window
 
-        // Revoke the Blob URL to free up resources
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Error downloading image:", error);
-      }
+      // Trigger a click event on the link
+      link.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading image:", error);
     }
-  };
+  }
+};
+
 
 
   return (
