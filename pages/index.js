@@ -124,7 +124,7 @@ const handleDownload = async () => {
       <h1 className="py-6 text-center font-bold text-2xl">
         Dream something with{" "}
         <a href="https://infinityai.online">
-          Infinity AI
+          Walone AI
         </a>
       </h1>
 
